@@ -70,7 +70,12 @@ const HomePage: React.FC = () => {
 
     // Set up event listeners before setting the source
     testAudio.addEventListener('canplaythrough', () => {
-      toast.success('Audio loaded successfully', { id: 'loading-audio' });
+      toast.success('Playing now!', { id: 'loading-audio' });
+      // Auto-play when loaded
+      testAudio.play().catch(playError => {
+        console.error('Auto-play failed:', playError);
+        toast.error('Click play button to start audio', { id: 'play-error' });
+      });
     });
 
     testAudio.addEventListener('error', (e) => {
@@ -83,7 +88,13 @@ const HomePage: React.FC = () => {
 
       // Try with the fallback URL
       const fallbackAudio = new Audio(fallbackUrl);
+      fallbackAudio.addEventListener('canplaythrough', () => {
+        fallbackAudio.play().catch(err => {
+          console.error('Fallback auto-play failed:', err);
+        });
+      });
       fallbackAudio.load();
+      audioRef.current = fallbackAudio;
     });
 
     // Configure the audio element
@@ -214,15 +225,29 @@ const HomePage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {featuredProjects.map(project => (
-                  <Card key={project.id} className="bg-[#1a1625] border-gray-800 overflow-hidden hover:border-[#41FDFE]/50 transition-all duration-300">
+                  <Card
+                    key={project.id}
+                    className="bg-[#1a1625] border-gray-800 overflow-hidden hover:border-[#41FDFE]/50 transition-all duration-300 cursor-pointer"
+                    onClick={() => {
+                      // Play audio when clicking anywhere on the card
+                      handlePlayAudio(project.audioUrl, project.id, project.genre);
+                    }}
+                  >
                     <div className="relative group">
                       <img src={project.image} alt={project.title} className="w-full aspect-square object-cover" />
                       <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           size="icon"
                           variant="secondary"
-                          className="rounded-full bg-[#41FDFE] text-black hover:bg-[#41FDFE]/80"
-                          onClick={() => handlePlayAudio(project.audioUrl, project.id, project.genre)}
+                          className={`rounded-full ${selectedProject === project.id && showPlayer ? 'bg-[#FF1CF7] animate-pulse' : 'bg-[#41FDFE]'} text-black hover:bg-[#41FDFE]/80 transition-all duration-300 transform hover:scale-110`}
+                          onClick={() => {
+                            // Visual feedback on click
+                            const btn = document.activeElement as HTMLElement;
+                            if (btn) btn.blur();
+
+                            // Play the audio
+                            handlePlayAudio(project.audioUrl, project.id, project.genre);
+                          }}
                         >
                           {selectedProject === project.id && showPlayer ?
                             <Pause className="h-6 w-6" /> :
@@ -283,15 +308,29 @@ const HomePage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {recentProjects.map(project => (
-                  <Card key={project.id} className="bg-[#1a1625] border-gray-800 overflow-hidden hover:border-[#41FDFE]/50 transition-all duration-300">
+                  <Card
+                    key={project.id}
+                    className="bg-[#1a1625] border-gray-800 overflow-hidden hover:border-[#41FDFE]/50 transition-all duration-300 cursor-pointer"
+                    onClick={() => {
+                      // Play audio when clicking anywhere on the card
+                      handlePlayAudio(project.audioUrl, project.id, project.genre);
+                    }}
+                  >
                     <div className="relative group">
                       <img src={project.image} alt={project.title} className="w-full aspect-square object-cover" />
                       <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           size="icon"
                           variant="secondary"
-                          className="rounded-full bg-[#41FDFE] text-black hover:bg-[#41FDFE]/80"
-                          onClick={() => handlePlayAudio(project.audioUrl, project.id, project.genre)}
+                          className={`rounded-full ${selectedProject === project.id && showPlayer ? 'bg-[#FF1CF7] animate-pulse' : 'bg-[#41FDFE]'} text-black hover:bg-[#41FDFE]/80 transition-all duration-300 transform hover:scale-110`}
+                          onClick={() => {
+                            // Visual feedback on click
+                            const btn = document.activeElement as HTMLElement;
+                            if (btn) btn.blur();
+
+                            // Play the audio
+                            handlePlayAudio(project.audioUrl, project.id, project.genre);
+                          }}
                         >
                           {selectedProject === project.id && showPlayer ?
                             <Pause className="h-6 w-6" /> :

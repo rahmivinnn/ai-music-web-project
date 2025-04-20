@@ -77,12 +77,26 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', () => setIsPlaying(false));
-    audio.addEventListener('canplaythrough', handleCanPlayThrough);
+    audio.addEventListener('canplaythrough', () => {
+      handleCanPlayThrough();
+      // Auto-play when loaded (YouTube Music style)
+      audio.play().then(() => {
+        setIsPlaying(true);
+        console.log("Auto-play successful");
+      }).catch(playError => {
+        console.error("Auto-play failed:", playError);
+        // Browser may block autoplay, show a message to the user
+        if (playError.name === 'NotAllowedError') {
+          toast.error('Click play button to start audio');
+        }
+      });
+    });
     audio.addEventListener('error', handleAudioError);
 
     // Configure the audio element
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
+    audio.volume = 0.7; // Set a comfortable default volume
 
     // Set the source
     audio.src = effectiveAudioUrl;
@@ -188,6 +202,9 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
   const togglePlayPause = () => {
     if (!audioRef.current) return;
 
+    // Visual feedback
+    toast.info(isPlaying ? 'Pausing...' : 'Playing...', { id: 'play-toggle', duration: 1000 });
+
     // Make sure audio context is resumed (needed for autoplay policy)
     resumeAudioContext().then(() => {
       if (!audioRef.current) return;
@@ -208,6 +225,7 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
           playPromise
             .then(() => {
               setIsPlaying(true);
+              toast.success('Now playing!', { id: 'play-toggle' });
             })
             .catch(error => {
               console.error("Error playing audio:", error);
@@ -217,10 +235,14 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
                 toast.error('Playback was blocked. Please interact with the page first.');
               } else {
                 // Try again with a delay
+                toast.info('Retrying playback...', { id: 'play-toggle' });
                 setTimeout(() => {
                   if (audioRef.current) {
                     audioRef.current.play()
-                      .then(() => setIsPlaying(true))
+                      .then(() => {
+                        setIsPlaying(true);
+                        toast.success('Now playing!', { id: 'play-toggle' });
+                      })
                       .catch(e => {
                         console.error("Second attempt failed:", e);
                         toast.error('Could not play audio. Please try again.');
