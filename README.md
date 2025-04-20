@@ -1,4 +1,6 @@
-# Welcome to your Lovable project
+# AI Music Web - Advanced Remix Studio
+
+A powerful web application for generating audio from text and creating professional-grade music remixes using AI technology with focus on EDM genre.
 
 ## Project info
 
