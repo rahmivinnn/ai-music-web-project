@@ -89,6 +89,14 @@ export const genreEffects: Record<string, GenreEffect> = {
       sidechain.attack.value = 0.003;
       sidechain.release.value = 0.25;
 
+      // Create main compressor
+      const compressor = audioContext.createDynamicsCompressor();
+      compressor.threshold.value = -18;
+      compressor.knee.value = 20;
+      compressor.ratio.value = 4;
+      compressor.attack.value = 0.005;
+      compressor.release.value = 0.1;
+
       // Create stereo widener
       const stereoWidener = audioContext.createStereoPanner();
       stereoWidener.pan.value = 0;
@@ -100,9 +108,9 @@ export const genreEffects: Record<string, GenreEffect> = {
       filter.Q.value = 1;
 
       // Create delay for ambient effects
-      const delay = audioContext.createDelay();
-      delay.delayTime.value = 0.375; // Synced to common EDM tempo
-      
+      const ambientDelay = audioContext.createDelay();
+      ambientDelay.delayTime.value = 0.375; // Synced to common EDM tempo
+
       // Create feedback for delay
       const feedback = audioContext.createGain();
       feedback.gain.value = 0.4;
@@ -111,21 +119,21 @@ export const genreEffects: Record<string, GenreEffect> = {
       const convolver = audioContext.createConvolver();
       const reverbTime = 2.5;
       const decay = 0.5;
-      
+
       // Create impulse response for reverb
       const sampleRate = audioContext.sampleRate;
       const length = sampleRate * reverbTime;
       const impulse = audioContext.createBuffer(2, length, sampleRate);
       const leftChannel = impulse.getChannelData(0);
       const rightChannel = impulse.getChannelData(1);
-      
+
       for (let i = 0; i < length; i++) {
         const t = i / sampleRate;
         const amplitude = Math.exp(-decay * t);
         leftChannel[i] = (Math.random() * 2 - 1) * amplitude;
         rightChannel[i] = (Math.random() * 2 - 1) * amplitude;
       }
-      
+
       convolver.buffer = impulse;
 
       // Create bassline enhancer
@@ -134,13 +142,13 @@ export const genreEffects: Record<string, GenreEffect> = {
       bassFilter.frequency.value = 100;
       bassFilter.gain.value = 8;
 
-      // Create stereo widener
-      const stereoWidener = audioContext.createStereoPanner();
-      
+      // Create stereo enhancer for width
+      const stereoEnhancer = audioContext.createStereoPanner();
+
       // Create delay for build-up effects
-      const delay = audioContext.createDelay();
-      delay.delayTime.value = 0.125; // 1/8th note at 120 BPM
-      
+      const buildupDelay = audioContext.createDelay();
+      buildupDelay.delayTime.value = 0.125; // 1/8th note at 120 BPM
+
       const delayGain = audioContext.createGain();
       delayGain.gain.value = 0.4;
 
@@ -149,8 +157,8 @@ export const genreEffects: Record<string, GenreEffect> = {
       bassFilter.connect(compressor);
       compressor.connect(convolver);
       convolver.connect(stereoWidener);
-      stereoWidener.connect(delay);
-      delay.connect(delayGain);
+      stereoWidener.connect(ambientDelay);
+      ambientDelay.connect(delayGain);
       delayGain.connect(audioContext.destination);
       stereoWidener.connect(audioContext.destination);
 
