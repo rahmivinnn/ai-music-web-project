@@ -56,10 +56,28 @@ const HomePage: React.FC = () => {
       audioRef.current.pause();
     }
 
+    // Show loading toast
+    toast.info('Loading audio...', { id: 'loading-audio' });
+
+    // Set state for audio player
     setCurrentAudio(url);
     setSelectedProject(id);
     setCurrentGenre(genre);
     setShowPlayer(true);
+
+    // Create a new audio element to test if the URL is valid
+    const testAudio = new Audio(url);
+    testAudio.addEventListener('canplaythrough', () => {
+      toast.success('Audio loaded successfully', { id: 'loading-audio' });
+    });
+    testAudio.addEventListener('error', () => {
+      toast.error('Could not load audio. Using fallback.', { id: 'loading-audio' });
+      // Use a fallback URL if the original fails
+      setCurrentAudio('https://cdn.freesound.org/previews/388/388713_7364899-lq.mp3');
+    });
+
+    // Start loading the audio
+    testAudio.load();
   };
 
   // Featured projects using EDM samples
@@ -74,9 +92,9 @@ const HomePage: React.FC = () => {
   }));
 
   // Recent projects using remaining EDM samples
-  const recentProjects = edmSamples.slice(4, 6).map((sample, index) => ({
+  const recentProjects = edmSamples.slice(4, 10).map((sample, index) => ({
     id: index + 5,
-    title: `My ${sample.genre} Remix`,
+    title: `My ${sample.genre.replace('EDM - ', '')} Remix`,
     artist: 'You',
     likes: Math.floor(Math.random() * 20) + 5,
     image: sample.imageUrl,

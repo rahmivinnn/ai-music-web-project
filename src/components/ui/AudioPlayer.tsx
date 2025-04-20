@@ -305,11 +305,19 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#0f1e26] to-[#1a1625] rounded-xl p-6 space-y-4 transition-all duration-300 hover:shadow-[0_0_15px_rgba(65,253,254,0.3)]" 
+    <div className="bg-gradient-to-r from-[#0f1e26] to-[#1a1625] rounded-xl p-6 space-y-4 transition-all duration-300 hover:shadow-[0_0_15px_rgba(65,253,254,0.3)]"
          onMouseEnter={() => setIsHovered(true)}
          onMouseLeave={() => setIsHovered(false)}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold bg-gradient-to-r from-[#41FDFE] to-[#41FDFE] bg-clip-text text-transparent">{title}</h3>
+        <div className="flex items-center">
+          <h3 className="text-xl font-bold bg-gradient-to-r from-[#41FDFE] to-[#41FDFE] bg-clip-text text-transparent">{title}</h3>
+          {!isAudioReady && !isGenerating && (
+            <div className="ml-3 flex items-center">
+              <div className="w-3 h-3 bg-[#41FDFE] rounded-full animate-pulse mr-2"></div>
+              <span className="text-xs text-gray-400">Loading audio...</span>
+            </div>
+          )}
+        </div>
         {isAudioReady && (
           <button
             onClick={handleDownload}
@@ -323,6 +331,15 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
       <div className="relative h-24 bg-gradient-to-b from-[#0a1419] to-[#1e3a44] rounded-xl overflow-hidden border border-[#41FDFE]/20">
         {isGenerating ? (
           <div className="absolute inset-0 bg-[#41FDFE]/30 animate-pulse" />
+        ) : !isAudioReady ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex space-x-2">
+              <div className="w-2 h-8 bg-[#41FDFE] rounded-full animate-equalizer-1"></div>
+              <div className="w-2 h-8 bg-[#41FDFE] rounded-full animate-equalizer-2"></div>
+              <div className="w-2 h-8 bg-[#41FDFE] rounded-full animate-equalizer-3"></div>
+              <div className="w-2 h-8 bg-[#41FDFE] rounded-full animate-equalizer-4"></div>
+            </div>
+          </div>
         ) : (
           <AudioVisualizer
             audioUrl={effectiveAudioUrl}
@@ -343,7 +360,7 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
           </button>
 
           <div className="flex-1 space-y-2">
-            <div 
+            <div
               ref={progressRef}
               onClick={handleProgressClick}
               className="h-2 bg-[#0a1419] rounded-full overflow-hidden cursor-pointer relative group"

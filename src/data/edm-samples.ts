@@ -111,6 +111,56 @@ export const edmSamples: EdmSample[] = [
     bpm: 126,
     duration: 36,
     imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=Progressive+House"
+  },
+  {
+    id: "edm11",
+    title: "EDM Synth Lead",
+    artist: "Synth Master",
+    url: "https://cdn.freesound.org/previews/648/648449_13418580-lq.mp3",
+    genre: "EDM",
+    bpm: 128,
+    duration: 30,
+    imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=EDM+Synth"
+  },
+  {
+    id: "edm12",
+    title: "Bass House",
+    artist: "Bass House Producer",
+    url: "https://cdn.freesound.org/previews/624/624632_5674468-lq.mp3",
+    genre: "EDM - Bass House",
+    bpm: 126,
+    duration: 28,
+    imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=Bass+House"
+  },
+  {
+    id: "edm13",
+    title: "EDM Drum Loop",
+    artist: "Drum Master",
+    url: "https://cdn.freesound.org/previews/648/648448_13418580-lq.mp3",
+    genre: "EDM",
+    bpm: 128,
+    duration: 15,
+    imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=EDM+Drums"
+  },
+  {
+    id: "edm14",
+    title: "EDM Vocal Chop",
+    artist: "Vocal Producer",
+    url: "https://cdn.freesound.org/previews/459/459145_5674468-lq.mp3",
+    genre: "EDM - Vocal",
+    bpm: 128,
+    duration: 20,
+    imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=Vocal+Chop"
+  },
+  {
+    id: "edm15",
+    title: "EDM Pluck",
+    artist: "Pluck Master",
+    url: "https://cdn.freesound.org/previews/436/436131_8946409-lq.mp3",
+    genre: "EDM",
+    bpm: 128,
+    duration: 10,
+    imageUrl: "https://placehold.co/300x300/0e0b16/41FDFE/png?text=EDM+Pluck"
   }
 ];
 
