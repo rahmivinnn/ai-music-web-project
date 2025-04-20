@@ -66,18 +66,36 @@ const HomePage: React.FC = () => {
     setShowPlayer(true);
 
     // Create a new audio element to test if the URL is valid
-    const testAudio = new Audio(url);
+    const testAudio = new Audio();
+
+    // Set up event listeners before setting the source
     testAudio.addEventListener('canplaythrough', () => {
       toast.success('Audio loaded successfully', { id: 'loading-audio' });
     });
-    testAudio.addEventListener('error', () => {
+
+    testAudio.addEventListener('error', (e) => {
+      console.error('Audio error:', e);
       toast.error('Could not load audio. Using fallback.', { id: 'loading-audio' });
+
       // Use a fallback URL if the original fails
-      setCurrentAudio('https://cdn.freesound.org/previews/388/388713_7364899-lq.mp3');
+      const fallbackUrl = 'https://cdn.freesound.org/previews/388/388713_7364899-lq.mp3';
+      setCurrentAudio(fallbackUrl);
+
+      // Try with the fallback URL
+      const fallbackAudio = new Audio(fallbackUrl);
+      fallbackAudio.load();
     });
 
-    // Start loading the audio
+    // Configure the audio element
+    testAudio.crossOrigin = "anonymous";
+    testAudio.preload = "auto";
+
+    // Set the source and start loading
+    testAudio.src = url;
     testAudio.load();
+
+    // Store the audio element for later use
+    audioRef.current = testAudio;
   };
 
   // Featured projects using EDM samples
@@ -91,11 +109,11 @@ const HomePage: React.FC = () => {
     genre: sample.genre
   }));
 
-  // Recent projects using remaining EDM samples
-  const recentProjects = edmSamples.slice(4, 10).map((sample, index) => ({
-    id: index + 5,
-    title: `My ${sample.genre.replace('EDM - ', '')} Remix`,
-    artist: 'You',
+  // Recent projects using popular EDM tracks
+  const recentProjects = edmSamples.slice(10, 20).map((sample, index) => ({
+    id: index + 11,
+    title: sample.title,
+    artist: sample.artist,
     likes: Math.floor(Math.random() * 20) + 5,
     image: sample.imageUrl,
     audioUrl: sample.url,
@@ -213,13 +231,15 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold">{project.title}</h3>
-                      <p className="text-sm text-gray-400">{project.artist}</p>
+                      <h3 className="font-semibold text-[#41FDFE]">{project.title}</h3>
+                      <p className="text-sm text-white">{project.artist}</p>
                       <div className="flex items-center justify-between mt-2 text-sm">
                         <div className="flex items-center text-gray-400">
                           <Heart size={14} className="mr-1 hover:text-red-500 cursor-pointer" /> {project.likes}
                         </div>
-                        <span className="text-[#41FDFE]">{project.genre}</span>
+                        <span className="bg-[#41FDFE]/20 text-[#41FDFE] px-2 py-0.5 rounded-full text-xs">
+                          {project.genre.replace('EDM - ', '')}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
@@ -280,13 +300,15 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="font-semibold">{project.title}</h3>
-                      <p className="text-sm text-gray-400">{project.artist}</p>
+                      <h3 className="font-semibold text-[#41FDFE]">{project.title}</h3>
+                      <p className="text-sm text-white">{project.artist}</p>
                       <div className="flex items-center justify-between mt-2 text-sm">
                         <div className="flex items-center text-gray-400">
                           <Heart size={14} className="mr-1 hover:text-red-500 cursor-pointer" /> {project.likes}
                         </div>
-                        <span className="text-[#41FDFE]">{project.genre}</span>
+                        <span className="bg-[#41FDFE]/20 text-[#41FDFE] px-2 py-0.5 rounded-full text-xs">
+                          {project.genre.replace('EDM - ', '')}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
