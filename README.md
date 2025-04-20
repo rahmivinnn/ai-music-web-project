@@ -1,6 +1,6 @@
 # AI Music Web - Advanced Remix Studio
 
-A powerful web application for generating audio from text and creating professional-grade music remixes using AI technology with focus on EDM genre.
+A powerful web application for generating audio from text and creating professional-grade music remixes using AI technology with focus on EDM genre. Features include text-to-audio conversion, audio remixing, and a library of popular EDM tracks.
 
 ## Project info
 
