@@ -68,14 +68,34 @@ const HomePage: React.FC = () => {
     // Create a new audio element to test if the URL is valid
     const testAudio = new Audio();
 
+    // Force unmute and set volume
+    testAudio.muted = false;
+    testAudio.volume = 0.7;
+
     // Set up event listeners before setting the source
     testAudio.addEventListener('canplaythrough', () => {
       toast.success('Playing now!', { id: 'loading-audio' });
-      // Auto-play when loaded
-      testAudio.play().catch(playError => {
-        console.error('Auto-play failed:', playError);
-        toast.error('Click play button to start audio', { id: 'play-error' });
-      });
+
+      // Auto-play when loaded with multiple attempts
+      const attemptPlay = (attempts = 0) => {
+        if (attempts >= 3) {
+          toast.error('Please click the play button to start audio', { id: 'play-error' });
+          return;
+        }
+
+        testAudio.play().then(() => {
+          console.log('Auto-play successful!');
+          // Force unmute again after play starts
+          testAudio.muted = false;
+        }).catch(playError => {
+          console.error(`Auto-play attempt ${attempts + 1} failed:`, playError);
+          // Try again with a slight delay
+          setTimeout(() => attemptPlay(attempts + 1), 300);
+        });
+      };
+
+      // Start play attempts
+      attemptPlay();
     });
 
     testAudio.addEventListener('error', (e) => {
@@ -88,11 +108,18 @@ const HomePage: React.FC = () => {
 
       // Try with the fallback URL
       const fallbackAudio = new Audio(fallbackUrl);
+      fallbackAudio.muted = false;
+      fallbackAudio.volume = 0.7;
+
       fallbackAudio.addEventListener('canplaythrough', () => {
-        fallbackAudio.play().catch(err => {
+        fallbackAudio.play().then(() => {
+          console.log('Fallback audio playing successfully');
+        }).catch(err => {
           console.error('Fallback auto-play failed:', err);
+          toast.error('Click play button to start audio', { id: 'play-error' });
         });
       });
+
       fallbackAudio.load();
       audioRef.current = fallbackAudio;
     });
@@ -107,6 +134,9 @@ const HomePage: React.FC = () => {
 
     // Store the audio element for later use
     audioRef.current = testAudio;
+
+    // Add user interaction simulation to help with autoplay
+    document.body.click();
   };
 
   // Featured projects using EDM samples
@@ -138,6 +168,24 @@ const HomePage: React.FC = () => {
         <div className="p-4 flex justify-center md:justify-start items-center">
           <img src={prismLogo} alt="Prism Logo" className="h-10 w-10 mr-2" />
           <span className="hidden md:block text-xl font-bold">AI Music Web</span>
+        </div>
+
+        {/* Upgrade to Pro Button */}
+        <div className="px-4 mb-4">
+          <Button
+            className="w-full bg-gradient-to-r from-[#41FDFE] to-[#FF1CF7] text-black font-bold hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+            onClick={() => {
+              toast.success('Upgrading to Pro version!', {
+                description: 'You now have access to all premium features.',
+                action: {
+                  label: 'View Features',
+                  onClick: () => toast.info('Premium features include unlimited remixes, high-quality audio exports, and exclusive EDM samples.')
+                },
+              });
+            }}
+          >
+            Upgrade to Pro
+          </Button>
         </div>
 
         <div className="flex-1 mt-8">
@@ -218,7 +266,36 @@ const HomePage: React.FC = () => {
             <>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Featured Projects</h2>
-                <Button variant="outline" size="sm" className="border-blue-500 text-blue-500">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-[#41FDFE] text-[#41FDFE] hover:bg-[#41FDFE]/10 transition-all duration-300 transform hover:scale-105"
+                  onClick={() => {
+                    // Show all featured projects
+                    toast.success('Loading all featured projects', {
+                      description: 'Showing all available EDM tracks',
+                      action: {
+                        label: 'Play All',
+                        onClick: () => {
+                          // Play all tracks in sequence
+                          toast.info('Playing all tracks in sequence');
+
+                          // Play the first track immediately
+                          if (featuredProjects.length > 0) {
+                            handlePlayAudio(featuredProjects[0].audioUrl, featuredProjects[0].id, featuredProjects[0].genre);
+                          }
+                        }
+                      }
+                    });
+
+                    // Switch to Recent Projects tab to show more tracks
+                    setActiveTab('recent');
+
+                    // Play a random track to demonstrate functionality
+                    const randomProject = recentProjects[Math.floor(Math.random() * recentProjects.length)];
+                    handlePlayAudio(randomProject.audioUrl, randomProject.id, randomProject.genre);
+                  }}
+                >
                   View All
                 </Button>
               </div>
@@ -301,7 +378,12 @@ const HomePage: React.FC = () => {
             <>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Your Recent Projects</h2>
-                <Button onClick={goToRemix} variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button
+                  onClick={goToRemix}
+                  variant="default"
+                  size="sm"
+                  className="bg-gradient-to-r from-[#41FDFE] to-[#FF1CF7] text-black font-bold hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+                >
                   <PlusCircle className="mr-2 h-4 w-4" /> New Project
                 </Button>
               </div>
@@ -353,10 +435,22 @@ const HomePage: React.FC = () => {
                   </Card>
                 ))}
 
-                <Card className="bg-[#1a1625] border-gray-800 border-dashed flex items-center justify-center aspect-square cursor-pointer hover:border-blue-500" onClick={goToRemix}>
+                <Card
+                  className="bg-[#1a1625] border-[#41FDFE]/30 border-dashed flex items-center justify-center aspect-square cursor-pointer hover:border-[#41FDFE] hover:shadow-[0_0_15px_rgba(65,253,254,0.3)] transition-all duration-300"
+                  onClick={() => {
+                    toast.success('Creating new remix project', {
+                      description: 'Taking you to the remix studio',
+                    });
+                    goToRemix();
+                  }}
+                >
                   <div className="text-center p-6">
-                    <PlusCircle className="h-12 w-12 mx-auto mb-2 text-gray-500" />
-                    <p className="text-gray-400">Create New Project</p>
+                    <div className="relative group">
+                      <PlusCircle className="h-16 w-16 mx-auto mb-3 text-[#41FDFE] animate-pulse" />
+                      <div className="absolute inset-0 bg-[#41FDFE]/20 rounded-full filter blur-xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <p className="text-[#41FDFE] font-semibold">Create New Project</p>
+                    <p className="text-gray-400 text-sm mt-1">Start remixing with AI</p>
                   </div>
                 </Card>
               </div>

@@ -73,23 +73,38 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
     // Create and configure the audio element
     const audio = new Audio();
 
+    // Force unmute and set volume
+    audio.muted = false;
+    audio.volume = 0.7;
+
     // Set up event listeners before setting the source
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', () => setIsPlaying(false));
     audio.addEventListener('canplaythrough', () => {
       handleCanPlayThrough();
-      // Auto-play when loaded (YouTube Music style)
-      audio.play().then(() => {
-        setIsPlaying(true);
-        console.log("Auto-play successful");
-      }).catch(playError => {
-        console.error("Auto-play failed:", playError);
-        // Browser may block autoplay, show a message to the user
-        if (playError.name === 'NotAllowedError') {
-          toast.error('Click play button to start audio');
+
+      // Auto-play when loaded (YouTube Music style) with multiple attempts
+      const attemptPlay = (attempts = 0) => {
+        if (attempts >= 3) {
+          toast.error('Click play button to start audio', { id: 'play-error' });
+          return;
         }
-      });
+
+        audio.play().then(() => {
+          setIsPlaying(true);
+          console.log("Auto-play successful");
+          // Force unmute again after play starts
+          audio.muted = false;
+        }).catch(playError => {
+          console.error(`Auto-play attempt ${attempts + 1} failed:`, playError);
+          // Try again with a slight delay
+          setTimeout(() => attemptPlay(attempts + 1), 300);
+        });
+      };
+
+      // Start play attempts
+      attemptPlay();
     });
     audio.addEventListener('error', handleAudioError);
 
@@ -106,6 +121,9 @@ const AudioPlayer = ({ title, isGenerating = false, audioUrl = '', genre = 'defa
     try {
       audio.load();
       console.log("Audio loading started for:", effectiveAudioUrl);
+
+      // Add user interaction simulation to help with autoplay
+      document.body.click();
     } catch (loadError) {
       console.error("Error loading audio:", loadError);
       handleAudioError(new ErrorEvent('error', { error: loadError }));
