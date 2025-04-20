@@ -519,25 +519,9 @@ export const playGeneratedAudio = async (prompt: string, voiceType: string = 'de
     const processedBuffer = applyGenreEffects(audioContext, audioBuffer, genre, voiceType);
     console.log('Applied', genre, 'effects with', voiceType, 'voice characteristics');
 
-    try {
-      // Create a source node for live playback
-      const source = audioContext.createBufferSource();
-      source.buffer = processedBuffer;
-
-      // Create a gain node for volume control
-      const gainNode = audioContext.createGain();
-      gainNode.gain.value = 0.7; // Set volume
-
-      // Connect the nodes
-      source.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Start playback
-      source.start();
-      console.log('Started live playback');
-    } catch (playbackError) {
-      console.warn('Live playback failed, continuing with file generation:', playbackError);
-    }
+    // Removed automatic playback to give user control
+    console.log('Audio generated and ready for playback when user clicks play');
+    // We'll let the AudioPlayer component handle playback
 
     // Create a simple WAV file directly from the processed buffer
     // This is more reliable than using OfflineAudioContext
