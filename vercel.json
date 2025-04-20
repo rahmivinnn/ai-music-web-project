@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ],
+  "buildCommand": "cd remix-ai-studio && npm install && npm run build",
+  "outputDirectory": "remix-ai-studio/dist",
+  "installCommand": "echo Skipping root install",
+  "framework": "vite",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}

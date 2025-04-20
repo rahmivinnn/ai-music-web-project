@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dark Side Prism</title>
+    <style>
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .prism-container {
+            width: 500px;
+            height: 400px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="prism-container">
+        <svg width="100%" height="100%" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+            <!-- Black Triangle (Prism) with white outline -->
+            <path d="M150 80 L350 320 L100 320 Z" fill="#000000" stroke="#ffffff" stroke-width="2" />
+            
+            <!-- Rainbow beam coming out of the prism -->
+            <path d="M250 320 L450 320" stroke="#ff0000" stroke-width="12" />
+            <path d="M250 320 L450 300" stroke="#ff7f00" stroke-width="12" />
+            <path d="M250 320 L450 280" stroke="#ffff00" stroke-width="12" />
+            <path d="M250 320 L450 260" stroke="#00ff00" stroke-width="12" />
+            <path d="M250 320 L450 240" stroke="#0000ff" stroke-width="12" />
+            <path d="M250 320 L450 220" stroke="#4b0082" stroke-width="12" />
+            <path d="M250 320 L450 200" stroke="#9400d3" stroke-width="12" />
+            
+            <!-- Light beam entering the prism -->
+            <path d="M100 320 L50 240" stroke="#ffffff" stroke-width="2" stroke-dasharray="5,5" />
+        </svg>
+    </div>
+</body>
+</html>
