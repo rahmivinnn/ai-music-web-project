@@ -2,6 +2,14 @@
 
 A powerful web application for generating audio from text and creating professional-grade music remixes using AI technology with focus on EDM genre. Features include text-to-audio conversion, audio remixing, and a library of popular EDM tracks.
 
+## Key Features
+
+- Text-to-audio conversion with AI technology
+- Professional-grade music remixing tools
+- Library of popular EDM tracks for inspiration
+- Interactive audio player with visualizations
+- User-friendly interface with modern design
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/d5887204-af6f-48d0-ac3f-056e02bac0ba
